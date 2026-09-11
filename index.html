@@ -162,6 +162,28 @@
     .badge.free { background:var(--ok-dim); color:var(--ok); }
     .progress-note { font-size:12.5px; color:var(--text-3); margin-bottom:26px; font-style:italic; }
 
+    /* SYNC BAR */
+    .sync-bar { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+                background:var(--card); border:1px solid var(--border); border-radius:10px;
+                padding:13px 18px; margin-bottom:26px; }
+    .sync-status { display:flex; align-items:center; gap:9px; font-size:12.5px; color:var(--text-2); }
+    .sync-dot { width:7px; height:7px; border-radius:50%; background:var(--text-3); flex-shrink:0; transition:background .2s; }
+    .sync-dot.live { background:var(--ok); }
+    .sync-dot.err  { background:var(--risk); }
+    .sync-dot.wait { background:var(--warn); }
+    .sync-actions { display:flex; gap:8px; }
+    .sync-btn { background:none; border:1px solid var(--border); color:var(--text-2); cursor:pointer;
+                padding:6px 13px; font-size:11.5px; font-family:inherit; border-radius:5px; white-space:nowrap; }
+    .sync-btn:hover { border-color:var(--text-2); color:var(--text); }
+    .sync-btn.primary { border-color:var(--desk); color:var(--desk); }
+    .sync-key-row { display:flex; gap:8px; align-items:center; width:100%; margin-top:12px;
+                    padding-top:13px; border-top:1px solid var(--border-sub); flex-wrap:wrap; }
+    .sync-key-row input { flex:1; min-width:180px; padding:7px 11px; background:var(--input-bg);
+                          border:1px solid var(--border); border-radius:5px; color:var(--text);
+                          font-size:12.5px; font-family:inherit; outline:none; }
+    .sync-key-row input:focus { border-color:var(--desk); }
+    .sync-hint { font-size:11.5px; color:var(--text-3); line-height:1.6; width:100%; margin-top:9px; }
+
     .timeline { display:grid; grid-template-columns:repeat(auto-fit,minmax(165px,1fr)); gap:12px; }
     .tl-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px; }
     .tl-when { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--desk); margin-bottom:9px; }
@@ -576,7 +598,26 @@
     Everything below exists to change that answer. Items marked <span class="badge blocker">blocker</span>
     would sink the offering if they come back wrong &mdash; do those first, while failing is still cheap.
   </p>
-  <p class="progress-note">Checkbox state saves locally in this browser only.</p>
+  <div class="sync-bar">
+    <div class="sync-status">
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="sync-text">Saving on this device only</span>
+    </div>
+    <div class="sync-actions">
+      <button class="sync-btn primary" id="sync-btn">Sync across devices</button>
+      <button class="sync-btn" id="sync-off" hidden>Stop syncing here</button>
+    </div>
+    <div class="sync-key-row" id="sync-key-row" hidden>
+      <input type="password" id="sync-key" placeholder="Sync phrase" autocomplete="off" spellcheck="false">
+      <button class="sync-btn primary" id="sync-go">Connect</button>
+      <button class="sync-btn" id="sync-cancel">Cancel</button>
+      <p class="sync-hint">
+        Use the same phrase on every device you want in sync. It is never sent anywhere &mdash; it is
+        hashed in the browser and the hash becomes the private address your ticks are stored at. There is
+        no recovery: a different phrase is simply a different, empty checklist.
+      </p>
+    </div>
+  </div>
 
   <div id="checklist"></div>
 </section>
@@ -946,9 +987,47 @@ const EVIDENCE = [
   }
 ];
 
+/* Local state is the source of truth for rendering; the sync module below mirrors
+   it to Firestore and calls applyRemote() when another device changes something. */
+function readLocal() {
+  try { return JSON.parse(localStorage.getItem('sd-evidence') || '{}'); } catch (e) { return {}; }
+}
+function writeLocal(map) {
+  try { localStorage.setItem('sd-evidence', JSON.stringify(map)); } catch (e) {}
+}
+
+const ROWS = {};   // id -> { cb, row }
+
+/* Upgraded to a Firestore write by the sync module. No-op until then. */
+window.__sdPush = function () {};
+
+/* Called by the sync module when the remote doc changes. */
+window.__sdApplyRemote = function (items) {
+  if (!items) return;
+  const map = readLocal();
+  Object.keys(ROWS).forEach(id => {
+    const val = !!items[id];
+    if (map[id] !== val) map[id] = val;
+    const r = ROWS[id];
+    if (r.cb.checked !== val) {
+      r.cb.checked = val;
+      r.row.classList.toggle('done', val);
+    }
+  });
+  writeLocal(map);
+  updateProgress();
+};
+
+/* Ticks made offline or before connecting are unioned up on first connect,
+   so switching a device on never silently discards work. */
+window.__sdLocalItems = function () {
+  const map = readLocal(), out = {};
+  Object.keys(ROWS).forEach(id => { out[id] = !!map[id]; });
+  return out;
+};
+
 function renderChecklist() {
-  let saved = {};
-  try { saved = JSON.parse(localStorage.getItem('sd-evidence') || '{}'); } catch (e) {}
+  let saved = readLocal();
 
   const root = document.getElementById('checklist');
   let total = 0, done = 0;
@@ -974,9 +1053,10 @@ function renderChecklist() {
       cb.checked = isDone;
       cb.addEventListener('change', () => {
         saved[it.id] = cb.checked;
-        try { localStorage.setItem('sd-evidence', JSON.stringify(saved)); } catch (e) {}
+        writeLocal(saved);
         row.classList.toggle('done', cb.checked);
         updateProgress();
+        window.__sdPush(it.id, cb.checked);
       });
 
       const body = document.createElement('div');
@@ -999,6 +1079,7 @@ function renderChecklist() {
       row.appendChild(cb);
       row.appendChild(body);
       gd.appendChild(row);
+      ROWS[it.id] = { cb: cb, row: row };
     });
 
     root.appendChild(gd);
@@ -1009,13 +1090,157 @@ function renderChecklist() {
 }
 
 function updateProgress() {
-  let saved = {};
-  try { saved = JSON.parse(localStorage.getItem('sd-evidence') || '{}'); } catch (e) {}
-  const done = Object.values(saved).filter(Boolean).length;
+  const saved = readLocal();
+  /* Count only live ids — a stale key from a removed item must not inflate the total. */
+  const done = Object.keys(ROWS).filter(id => saved[id]).length;
   document.getElementById('stat-evidence').textContent = done + '/' + window.__evTotal;
 }
 
 renderChecklist();
+</script>
+
+<script type="module">
+/* ---------------------------------------------------------------------------
+   Cross-device sync for the evidence checklist.
+
+   The page is public, so the doc must not live at a guessable path. The sync
+   phrase is hashed in the browser and the hash IS the document id — the phrase
+   itself never leaves the device and is not stored. Anyone who does not know it
+   cannot find the document; anyone who does has full access. Capability, not a
+   password check.
+
+   Requires this rule in the bourbonffldraft Firestore project:
+     match /sourcing-desk/{doc} { allow read, write: if true; }
+
+   Everything here is additive: with no phrase set, or if Firestore is
+   unreachable, the checklist behaves exactly as it did on localStorage alone.
+--------------------------------------------------------------------------- */
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyAp1tnKQKXJuE-XZrETMGX6yCM5XxYzOWg',
+  authDomain: 'bourbonffldraft.firebaseapp.com',
+  projectId: 'bourbonffldraft',
+  storageBucket: 'bourbonffldraft.firebasestorage.app',
+  messagingSenderId: '993985146902',
+  appId: '1:993985146902:web:31441406f152d043f74537',
+};
+const COLLECTION = 'sourcing-desk';
+const KEY_STORE  = 'sd-sync-key';
+
+const dot     = document.getElementById('sync-dot');
+const text    = document.getElementById('sync-text');
+const btnOn   = document.getElementById('sync-btn');
+const btnOff  = document.getElementById('sync-off');
+const keyRow  = document.getElementById('sync-key-row');
+const keyIn   = document.getElementById('sync-key');
+const btnGo   = document.getElementById('sync-go');
+const btnCncl = document.getElementById('sync-cancel');
+
+let fs = null, db = null, ref = null, unsub = null;
+/* Set while we are writing our own change, so the echoed snapshot does not
+   fight the checkbox the user is currently interacting with. */
+let writing = 0;
+
+function status(state, msg) {
+  dot.className = 'sync-dot' + (state ? ' ' + state : '');
+  text.textContent = msg;
+}
+
+async function docIdFor(phrase) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('sourcing-desk:' + phrase));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function connect(docId, isFirstConnect) {
+  status('wait', 'Connecting…');
+  try {
+    if (!fs) {
+      const appMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+      fs = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+      db = fs.getFirestore(appMod.initializeApp(FIREBASE_CONFIG));
+    }
+    ref = fs.doc(db, COLLECTION, docId);
+
+    if (isFirstConnect) {
+      /* Union local ticks into whatever is already there rather than overwriting:
+         connecting a second device must never wipe the first one's progress. */
+      const snap = await fs.getDoc(ref);
+      const remote = snap.exists() ? (snap.data().items || {}) : {};
+      const local  = window.__sdLocalItems();
+      const merged = Object.assign({}, remote);
+      Object.keys(local).forEach(id => { if (local[id]) merged[id] = true; });
+      await fs.setDoc(ref, { items: merged, updatedAt: Date.now() }, { merge: true });
+    }
+
+    if (unsub) unsub();
+    unsub = fs.onSnapshot(ref, snap => {
+      if (writing > 0) return;
+      const d = snap.data();
+      if (d && d.items) window.__sdApplyRemote(d.items);
+      status('live', 'Synced across devices');
+    }, err => {
+      console.error('sync listener failed', err);
+      status('err', 'Sync error — saving locally');
+    });
+
+    window.__sdPush = async (id, checked) => {
+      if (!ref) return;
+      writing++;
+      try {
+        await fs.setDoc(ref, { items: { [id]: checked }, updatedAt: Date.now() }, { merge: true });
+      } catch (e) {
+        console.error('sync write failed', e);
+        status('err', 'Could not save remotely — kept on this device');
+      } finally {
+        /* Let the echo land before we start listening again. */
+        setTimeout(() => { writing = Math.max(0, writing - 1); }, 400);
+      }
+    };
+
+    try { localStorage.setItem(KEY_STORE, docId); } catch (e) {}
+    btnOn.hidden = true;
+    btnOff.hidden = false;
+    keyRow.hidden = true;
+    keyIn.value = '';
+    status('live', 'Synced across devices');
+  } catch (e) {
+    console.error('sync connect failed', e);
+    status('err', 'Could not connect — saving on this device only');
+    btnOn.hidden = false;
+    btnOff.hidden = true;
+  }
+}
+
+btnOn.addEventListener('click', () => {
+  keyRow.hidden = false;
+  keyIn.focus();
+});
+btnCncl.addEventListener('click', () => {
+  keyRow.hidden = true;
+  keyIn.value = '';
+});
+btnGo.addEventListener('click', async () => {
+  const phrase = keyIn.value.trim();
+  if (!phrase) { keyIn.focus(); return; }
+  connect(await docIdFor(phrase), true);
+});
+keyIn.addEventListener('keydown', e => { if (e.key === 'Enter') btnGo.click(); });
+
+btnOff.addEventListener('click', () => {
+  if (unsub) { unsub(); unsub = null; }
+  ref = null;
+  window.__sdPush = function () {};
+  try { localStorage.removeItem(KEY_STORE); } catch (e) {}
+  btnOn.hidden = false;
+  btnOff.hidden = true;
+  status('', 'Saving on this device only — ticks kept');
+});
+
+/* Reconnect silently on load if this device has already been paired. */
+(function () {
+  let existing = null;
+  try { existing = localStorage.getItem(KEY_STORE); } catch (e) {}
+  if (existing) connect(existing, false);
+})();
 </script>
 </body>
 </html>
