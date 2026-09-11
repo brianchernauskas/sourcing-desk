@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sourcing Desk — Working Case</title>
+  <style>
+    :root {
+      --bg:#080D16; --surface:#0F1724; --card:#111B2B; --card-hover:#152235;
+      --border:#1E2D42; --border-sub:#162030;
+      --text:#E8EFF8; --text-2:#7D8FA3; --text-3:#3E5068;
+      --proxima:#818CF8;
+      --desk:#FB7185; --desk-dim:rgba(251,113,133,.12);
+      --ok:#34D399; --ok-dim:rgba(52,211,153,.12);
+      --warn:#FBBF24; --warn-dim:rgba(251,191,36,.12);
+      --risk:#F87171; --risk-dim:rgba(248,113,113,.12);
+      --input-bg:#0B1220;
+    }
+    :root[data-theme="light"] {
+      --bg:#F0F4F9; --surface:#FFFFFF; --card:#FFFFFF; --card-hover:#F7F9FC;
+      --border:#D1DCE8; --border-sub:#E4EBF3;
+      --text:#0F1724; --text-2:#4A5A6E; --text-3:#9AABB8;
+      --desk:#E11D48; --desk-dim:rgba(225,29,72,.08);
+      --ok:#059669; --ok-dim:rgba(5,150,105,.08);
+      --warn:#B45309; --warn-dim:rgba(180,83,9,.08);
+      --risk:#DC2626; --risk-dim:rgba(220,38,38,.08);
+      --input-bg:#F7F9FC;
+    }
+    :root[data-theme="dark"] {
+      --bg:#080D16; --surface:#0F1724; --card:#111B2B; --card-hover:#152235;
+      --border:#1E2D42; --border-sub:#162030;
+      --text:#E8EFF8; --text-2:#7D8FA3; --text-3:#3E5068;
+      --desk:#FB7185; --desk-dim:rgba(251,113,133,.12);
+      --ok:#34D399; --ok-dim:rgba(52,211,153,.12);
+      --warn:#FBBF24; --warn-dim:rgba(251,191,36,.12);
+      --risk:#F87171; --risk-dim:rgba(248,113,113,.12);
+      --input-bg:#0B1220;
+    }
+
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; font-size:15px; line-height:1.6; min-height:100vh; }
+    a { color:inherit; }
+
+    .draft-banner { background:var(--desk-dim); border-bottom:1px solid var(--desk); padding:7px 40px; display:flex; align-items:center; gap:12px; }
+    .draft-banner .dot { width:6px;height:6px;border-radius:50%;background:var(--desk);flex-shrink:0; }
+    .draft-banner p { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--desk); }
+
+    .site-header { border-bottom:1px solid var(--border); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:54px; position:sticky; top:0; background:var(--bg); z-index:50; }
+    .wordmark { font-family:Georgia,serif; font-size:19px; font-weight:700; letter-spacing:-.4px; }
+    .wordmark span { color:var(--desk); }
+    .header-right { display:flex; align-items:center; gap:14px; }
+    .countdown-pill { font-size:11px; font-weight:600; letter-spacing:.05em; background:var(--warn-dim); color:var(--warn); padding:3px 10px; border-radius:20px; white-space:nowrap; }
+    .theme-toggle { background:none; border:1px solid var(--border); color:var(--text-2); cursor:pointer; padding:5px 12px; font-size:11px; letter-spacing:.06em; font-family:inherit; border-radius:4px; }
+    .theme-toggle:hover { border-color:var(--text-2); color:var(--text); }
+
+    .section-nav { border-bottom:1px solid var(--border); padding:0 40px; display:flex; gap:2px; overflow-x:auto; background:var(--surface); }
+    .section-nav a { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); padding:11px 14px; text-decoration:none; white-space:nowrap; border-bottom:2px solid transparent; }
+    .section-nav a:hover { color:var(--text); border-bottom-color:var(--border); }
+
+    .hero { padding:52px 40px 40px; border-bottom:1px solid var(--border); }
+    .hero-eyebrow { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--desk); margin-bottom:14px; }
+    .hero h1 { font-family:Georgia,serif; font-size:clamp(28px,4vw,42px); font-weight:700; line-height:1.12; letter-spacing:-.6px; text-wrap:balance; margin-bottom:16px; max-width:780px; }
+    .hero-thesis { font-size:16px; color:var(--text-2); line-height:1.75; max-width:690px; }
+    .hero-thesis strong { color:var(--text); font-weight:600; }
+    .hero-stats { display:flex; gap:36px; margin-top:32px; flex-wrap:wrap; }
+    .hero-stat-num { font-family:Georgia,serif; font-size:30px; font-weight:700; line-height:1; }
+    .hero-stat-num.thin { color:var(--risk); }
+    .hero-stat-label { font-size:11px; color:var(--text-3); letter-spacing:.04em; margin-top:5px; }
+
+    section.block { padding:56px 40px; border-bottom:1px solid var(--border); }
+    .block-label { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--text-3); margin-bottom:10px; }
+    .block h2 { font-family:Georgia,serif; font-size:26px; font-weight:700; letter-spacing:-.3px; margin-bottom:12px; }
+    .block-intro { font-size:14px; color:var(--text-2); max-width:730px; line-height:1.75; margin-bottom:14px; }
+    .block-intro:last-of-type { margin-bottom:32px; }
+    .block-intro strong { color:var(--text); font-weight:600; }
+
+    h3.sub { font-size:12px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--text-2); margin:38px 0 14px; }
+
+    .prose-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:14px; }
+    .pcard { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:22px; position:relative; overflow:hidden; }
+    .pcard::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--desk); }
+    .pcard.ok::before { background:var(--ok); }
+    .pcard.warn::before { background:var(--warn); }
+    .pcard.risk::before { background:var(--risk); }
+    .pcard h4 { font-size:14px; font-weight:700; margin-bottom:8px; }
+    .pcard p { font-size:13.5px; color:var(--text-2); line-height:1.7; }
+    .pcard p + p { margin-top:10px; }
+    .pcard .tag { display:inline-block; font-family:'Courier New',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:2px 7px; border-radius:3px; margin-bottom:10px; background:var(--desk-dim); color:var(--desk); }
+    .pcard.ok .tag { background:var(--ok-dim); color:var(--ok); }
+    .pcard.warn .tag { background:var(--warn-dim); color:var(--warn); }
+    .pcard.risk .tag { background:var(--risk-dim); color:var(--risk); }
+
+    .table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:10px; background:var(--card); }
+    table { width:100%; border-collapse:collapse; font-size:13px; min-width:660px; }
+    th { text-align:left; font-family:'Courier New',monospace; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); padding:12px 16px; border-bottom:1px solid var(--border); font-weight:400; white-space:nowrap; }
+    td { padding:14px 16px; border-bottom:1px solid var(--border-sub); color:var(--text-2); vertical-align:top; line-height:1.6; }
+    tr:last-child td { border-bottom:none; }
+    td strong { color:var(--text); font-weight:600; }
+    tbody tr:hover { background:var(--card-hover); }
+    .us-row td { background:var(--desk-dim); }
+    .us-row td strong { color:var(--desk); }
+
+    .model-layout { display:grid; grid-template-columns:minmax(280px,340px) 1fr; gap:20px; align-items:start; }
+    @media(max-width:900px){ .model-layout { grid-template-columns:1fr; } }
+    .inputs-panel { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:22px; }
+    .input-group { margin-bottom:22px; }
+    .input-group:last-child { margin-bottom:0; }
+    .input-group-title { font-family:'Courier New',monospace; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); padding-bottom:8px; border-bottom:1px solid var(--border-sub); margin-bottom:14px; }
+    .field { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+    .field:last-child { margin-bottom:0; }
+    .field label { font-size:12.5px; color:var(--text-2); }
+    .field input { width:90px; padding:6px 9px; background:var(--input-bg); border:1px solid var(--border); border-radius:5px; color:var(--text); font-size:12.5px; font-family:inherit; text-align:right; outline:none; }
+    .field input:focus { border-color:var(--desk); }
+    .field select { padding:6px 9px; background:var(--input-bg); border:1px solid var(--border); border-radius:5px; color:var(--text); font-size:12.5px; font-family:inherit; outline:none; }
+    .reset-btn { width:100%; margin-top:18px; padding:8px; background:none; border:1px solid var(--border); color:var(--text-3); border-radius:6px; font-size:11.5px; font-family:inherit; cursor:pointer; }
+    .reset-btn:hover { border-color:var(--text-2); color:var(--text-2); }
+
+    .results { display:flex; flex-direction:column; gap:14px; }
+    .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:12px; }
+    .kpi { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px; }
+    .kpi-label { font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-3); margin-bottom:8px; }
+    .kpi-val { font-family:Georgia,serif; font-size:25px; font-weight:700; line-height:1; }
+    .kpi-note { font-size:11px; color:var(--text-3); margin-top:7px; line-height:1.5; }
+    .kpi-val.good { color:var(--ok); }
+    .kpi-val.bad { color:var(--risk); }
+    .kpi-val.mid { color:var(--warn); }
+
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media(max-width:700px){ .two-col { grid-template-columns:1fr; } }
+    .breakdown { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px 22px; }
+    .breakdown h4 { font-family:'Courier New',monospace; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); margin-bottom:14px; }
+    .bd-line { display:flex; justify-content:space-between; align-items:baseline; padding:7px 0; font-size:13px; border-bottom:1px solid var(--border-sub); gap:16px; }
+    .bd-line:last-of-type { border-bottom:none; }
+    .bd-line span:first-child { color:var(--text-2); }
+    .bd-line span:last-child { font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; }
+    .bd-line.total { border-top:1px solid var(--border); border-bottom:none; margin-top:6px; padding-top:12px; font-size:14px; }
+    .bd-line.total span:first-child { color:var(--text); font-weight:600; }
+    .bd-line.neg span:last-child { color:var(--risk); }
+    .bd-sub { font-size:11.5px; color:var(--text-3); margin-top:12px; line-height:1.6; }
+
+    .capacity-bar { height:7px; background:var(--border-sub); border-radius:4px; overflow:hidden; margin-top:14px; }
+    .capacity-fill { height:100%; background:var(--desk); border-radius:4px; transition:width .25s; }
+
+    .model-caveat { margin-top:18px; padding:14px 18px; background:var(--warn-dim); border-left:2px solid var(--warn); border-radius:0 6px 6px 0; font-size:12.5px; color:var(--text-2); line-height:1.7; }
+    .model-caveat strong { color:var(--warn); }
+
+    .check-group { margin-bottom:26px; }
+    .check-group-head { display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding-bottom:9px; border-bottom:1px solid var(--border-sub); margin-bottom:4px; }
+    .check-group-head h4 { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:var(--text-2); }
+    .check-group-head .when { font-size:11px; color:var(--text-3); white-space:nowrap; }
+    .check-item { display:flex; gap:12px; padding:11px 0; border-bottom:1px solid var(--border-sub); align-items:flex-start; }
+    .check-item:last-child { border-bottom:none; }
+    .check-item input[type=checkbox] { margin-top:3px; width:15px; height:15px; accent-color:var(--desk); cursor:pointer; flex-shrink:0; }
+    .check-body { flex:1; }
+    .check-body .ct { font-size:13.5px; color:var(--text); line-height:1.55; }
+    .check-body .cw { font-size:12px; color:var(--text-3); margin-top:3px; line-height:1.6; }
+    .check-item.done .ct { text-decoration:line-through; color:var(--text-3); }
+    .badge { font-family:'Courier New',monospace; font-size:9px; letter-spacing:.1em; text-transform:uppercase; padding:2px 6px; border-radius:3px; background:var(--border-sub); color:var(--text-3); white-space:nowrap; margin-left:8px; }
+    .badge.blocker { background:var(--risk-dim); color:var(--risk); }
+    .badge.free { background:var(--ok-dim); color:var(--ok); }
+    .progress-note { font-size:12.5px; color:var(--text-3); margin-bottom:26px; font-style:italic; }
+
+    .timeline { display:grid; grid-template-columns:repeat(auto-fit,minmax(165px,1fr)); gap:12px; }
+    .tl-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px; }
+    .tl-when { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--desk); margin-bottom:9px; }
+    .tl-item h4 { font-size:13.5px; font-weight:700; margin-bottom:7px; }
+    .tl-item p { font-size:12.5px; color:var(--text-2); line-height:1.65; }
+
+    .site-footer { padding:24px 40px 44px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+    .site-footer p { font-size:12px; color:var(--text-3); font-style:italic; }
+    .footer-wordmark { font-family:Georgia,serif; font-size:16px; font-weight:700; color:var(--text-3); }
+
+    @media(max-width:640px){
+      .site-header, .section-nav, .draft-banner { padding-left:20px; padding-right:20px; }
+      .hero, section.block, .site-footer { padding-left:20px; padding-right:20px; }
+      .hero { padding-top:36px; }
+      section.block { padding-top:42px; padding-bottom:42px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="draft-banner">
+  <span class="dot"></span>
+  <p>Internal working draft &mdash; unpublished, not for circulation</p>
+</div>
+
+<header class="site-header">
+  <div class="wordmark">Sourcing <span>Desk.</span></div>
+  <div class="header-right">
+    <span class="countdown-pill" id="countdown">&nbsp;</span>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle theme</button>
+  </div>
+</header>
+
+<nav class="section-nav">
+  <a href="#thesis">Thesis</a>
+  <a href="#market">Market</a>
+  <a href="#offering">Offering</a>
+  <a href="#model">Economics</a>
+  <a href="#evidence">Evidence plan</a>
+  <a href="#objections">Objections</a>
+  <a href="#open">Open questions</a>
+  <a href="#timeline">Timeline</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Working case &mdash; VP board, March 2027</div>
+  <h1>An engagement ends. The client's memory decays. The vendor's does not.</h1>
+  <p class="hero-thesis">
+    Proxima delivers a negotiation, banks the savings, and leaves. Eighteen months later the client
+    renews that same contract from a standing start, against a counterparty with perfect recall of every
+    concession it ever made. <strong>Sourcing Desk</strong> keeps the client's side of that asymmetry
+    alive &mdash; and keeps Proxima inside a renewal cycle it currently walks away from.
+  </p>
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-num thin">1</div>
+      <div class="hero-stat-label">Completed engagements (mine)</div>
+    </div>
+    <div>
+      <div class="hero-stat-num thin">0</div>
+      <div class="hero-stat-label">Pilots running</div>
+    </div>
+    <div>
+      <div class="hero-stat-num" id="stat-evidence">0/0</div>
+      <div class="hero-stat-label">Evidence items complete</div>
+    </div>
+    <div>
+      <div class="hero-stat-num" id="stat-months">&mdash;</div>
+      <div class="hero-stat-label">Months to board</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ THESIS ============ -->
+<section class="block" id="thesis">
+  <div class="block-label">01 &mdash; Thesis</div>
+  <h2>What this is, and what it is not</h2>
+  <p class="block-intro">
+    The offering is <strong>not</strong> market research on a subscription, and it is not outsourced
+    procurement execution. Both of those categories are occupied by larger, better-capitalised players.
+    It is a narrow bet on one thing nobody else can sell: <strong>the continuity of the team that already
+    ran your last deal.</strong>
+  </p>
+  <p class="block-intro">
+    Gartner can tell a client what the market pays. It cannot tell them what concession their own CSM
+    folded on in month nine of the last negotiation, which of their business units quietly drove the
+    overage, or which clause Proxima had to fight for and would fight for again. That knowledge exists
+    for exactly as long as the engagement team remembers it, and today Proxima lets it evaporate.
+  </p>
+
+  <div class="prose-grid">
+    <div class="pcard">
+      <span class="tag">The wedge</span>
+      <h4>Continuity, not intelligence</h4>
+      <p>Every competitor sells information. We sell the retained memory of a specific client's estate,
+         held by people who negotiated it. That is unreplicable by a research firm and uneconomic for a
+         competitor to rebuild.</p>
+      <p>It is also perishable. The wedge only exists while the original team is still reachable &mdash;
+         which is an argument for building this now rather than later.</p>
+    </div>
+    <div class="pcard ok">
+      <span class="tag">The real prize</span>
+      <h4>The renewal calendar</h4>
+      <p>Tracking every subscriber's contract expiry dates 12&ndash;24 months out gives Proxima the best
+         pipeline signal that exists in sourcing: advance knowledge of exactly when a client is about to
+         need help, across their whole estate.</p>
+      <p>Frame the offering as a pipeline engine that happens to be revenue-positive. That framing clears
+         a much lower margin bar and survives scrutiny better than a standalone P&amp;L line.</p>
+    </div>
+    <div class="pcard warn">
+      <span class="tag">Conditional</span>
+      <h4>The data flywheel</h4>
+      <p>Each subscriber feeds back pricing, vendor behaviour, and renewal outcomes. That improves the
+         benchmark asset, which improves both the subscription and the core consulting practice. Classic
+         compounding &mdash; the shape boards like.</p>
+      <p>Entirely contingent on the confidentiality and conflicts questions in section 06. Do not present
+         the flywheel without presenting the clearance alongside it.</p>
+    </div>
+  </div>
+
+  <h3 class="sub">Why this is not simply "recurring revenue would be nice"</h3>
+  <p class="block-intro">
+    Recurring revenue is the benefit, not the argument. Every consultancy wants it and most have failed
+    to build it, for reasons that are well understood and covered in section 06. The argument has to be
+    that Proxima holds an asset &mdash; engagement-derived client knowledge plus a working tooling layer
+    &mdash; that is currently written off at the end of every project, and that the marginal cost of
+    monetising it is low. That is a specific claim, and it is falsifiable. The evidence plan in section 05
+    is designed to falsify it before March, not to decorate it.
+  </p>
+</section>
+
+<!-- ============ MARKET ============ -->
+<section class="block" id="market">
+  <div class="block-label">02 &mdash; Market</div>
+  <h2>Who already sells something adjacent</h2>
+  <p class="block-intro">
+    This category is not empty, and walking into the board implying that it is will end the conversation.
+    Positioning below is from general market knowledge and <strong>needs verifying against current
+    published positioning before the board</strong> &mdash; treat every row as a hypothesis to confirm.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>What they sell</th>
+          <th>Commercial model</th>
+          <th>Where they are weak</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Gartner / Forrester</strong></td>
+          <td>Market research, analyst access, some contract benchmarking</td>
+          <td>Seat-based annual subscription</td>
+          <td>Generic to the client's estate; analysts have never sat in the client's negotiation; no accountability for outcome</td>
+        </tr>
+        <tr>
+          <td><strong>ClearEdge Partners</strong></td>
+          <td>IT deal advisory plus market intelligence, transaction-level support</td>
+          <td>Retainer / subscription hybrid</td>
+          <td>Closest analogue to this offering &mdash; assume they do it well and differentiate on estate familiarity, not concept</td>
+        </tr>
+        <tr>
+          <td><strong>UpperEdge</strong></td>
+          <td>Enterprise software advisory, heavily weighted to SAP / Oracle / Salesforce</td>
+          <td>Advisory retainer</td>
+          <td>Narrow vendor coverage; little presence in cloud infrastructure commitments</td>
+        </tr>
+        <tr>
+          <td><strong>NPI Financial</strong></td>
+          <td>IT price benchmarking on specific transactions</td>
+          <td>Per-deal and subscription</td>
+          <td>Price-point focused; thin on negotiation strategy and vendor relationship management</td>
+        </tr>
+        <tr>
+          <td><strong>GEP / Accenture SPS</strong></td>
+          <td>Outsourced procurement execution &mdash; the actual "sourcing as a service" category</td>
+          <td>Managed service, multi-year</td>
+          <td>Different buyer, different budget, far larger scope; a naming collision, not a competitor</td>
+        </tr>
+        <tr class="us-row">
+          <td><strong>Sourcing Desk</strong></td>
+          <td>Retained knowledge of a client's own estate, held by the team that negotiated it, plus tooling</td>
+          <td>Tiered subscription, annual commitment</td>
+          <td><strong>Unproven. No pilot, no benchmark asset yet, and delivery capacity is the open question.</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="model-caveat">
+    <strong>Naming.</strong> "Sourcing as a Service" already means outsourced procurement execution
+    (the GEP/Accenture row above). Using it will cost the first five minutes of every conversation to
+    correcting the misunderstanding, and it collides with SaaS besides. <em>Sourcing Desk</em> is the
+    working name here; <em>Renewal Intelligence</em> and <em>Continuity</em> are the alternates.
+  </div>
+</section>
+
+<!-- ============ OFFERING ============ -->
+<section class="block" id="offering">
+  <div class="block-label">03 &mdash; Offering design</div>
+  <h2>Four tiers, with a deliberate ceiling on each</h2>
+  <p class="block-intro">
+    The design principle is that <strong>every tier is capped</strong>. Unlimited advisory is how three
+    clients end up consuming eighty percent of the capacity, and it is the single most common way this
+    kind of offering dies inside a consultancy. Prices below are placeholders for the model in section 04
+    and carry no validation.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tier</th>
+          <th>What is in it</th>
+          <th>Explicitly not in it</th>
+          <th>Indicative price</th>
+          <th>Cost to serve</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>0 &mdash; Nurture</strong><br><span class="badge free">Free</span></td>
+          <td>Renewal calendar maintained for every past client; quarterly market digest</td>
+          <td>Any individual response or advice</td>
+          <td>&mdash;</td>
+          <td>Near zero; automated off existing digest workflow</td>
+        </tr>
+        <tr>
+          <td><strong>1 &mdash; Intelligence</strong></td>
+          <td>Benchmarks, vendor playbooks, price-movement alerts, full access to the planner tooling</td>
+          <td>Named contact, response SLA, deal review</td>
+          <td>$3,500 / mo</td>
+          <td>Marginal &mdash; content is produced once and served many times</td>
+        </tr>
+        <tr>
+          <td><strong>2 &mdash; Desk</strong></td>
+          <td>Tier 1 plus capped advisory hours per quarter, deal reviews, pre-negotiation preparation sessions</td>
+          <td>Sitting at the negotiating table; owning the outcome</td>
+          <td>$9,000 / mo</td>
+          <td>Real and variable &mdash; this is the tier that must be capped and measured</td>
+        </tr>
+        <tr>
+          <td><strong>3 &mdash; Embedded</strong></td>
+          <td>Named fractional sourcing lead, set days per month</td>
+          <td>Nothing much &mdash; this is fractional staffing</td>
+          <td>$25,000 / mo</td>
+          <td>Effectively a staffed role; margin behaves like consulting, not software</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub">The boundary against project work</h3>
+  <p class="block-intro">
+    Cannibalisation is a fair challenge and needs a one-sentence answer that holds up:
+    <strong>the subscription tells a client what good looks like; the engagement goes and gets it.</strong>
+    Sourcing Desk prepares, benchmarks and coaches. It does not sit at the table, does not run the process,
+    and does not carry accountability for the landed outcome. Keeping that line clean is what stops a
+    $150k engagement being traded down for a $9k-a-month retainer &mdash; and it is a line that has to be
+    enforced in delivery, not just written on a slide.
+  </p>
+
+  <h3 class="sub">Value attribution &mdash; build it in from day one</h3>
+  <p class="block-intro">
+    Consulting renews on measured savings. A subscription's value is diffuse, and "we stopped you getting
+    hosed" does not survive a CFO's cost review at month twelve. Every benchmark issued gets logged, the
+    client's landed price is captured against it, and the delta is attributed. Without that mechanism the
+    offering will churn heavily at first renewal regardless of how good the advice was.
+  </p>
+</section>
+
+<!-- ============ MODEL ============ -->
+<section class="block" id="model">
+  <div class="block-label">04 &mdash; Economics</div>
+  <h2>Live model</h2>
+  <p class="block-intro">
+    Every figure below is an assumption until pilot data replaces it. The point of this model is not the
+    output &mdash; it is to find the inputs the answer is most sensitive to, so the evidence plan can go
+    and measure those first. <strong>Hours consumed per client is almost certainly the one that decides
+    whether this works.</strong>
+  </p>
+
+  <div class="model-layout">
+    <div class="inputs-panel">
+      <div class="input-group">
+        <div class="input-group-title">Currency</div>
+        <div class="field">
+          <label for="cur">Display in</label>
+          <select id="cur">
+            <option value="$">USD ($)</option>
+            <option value="£">GBP (£)</option>
+            <option value="€">EUR (€)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-group-title">Tier 1 — Intelligence</div>
+        <div class="field"><label for="t1n">Clients</label><input type="number" id="t1n" value="12" min="0"></div>
+        <div class="field"><label for="t1p">Price / month</label><input type="number" id="t1p" value="3500" min="0" step="250"></div>
+        <div class="field"><label for="t1h">Hours / client / mo</label><input type="number" id="t1h" value="4" min="0" step="0.5"></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-group-title">Tier 2 — Desk</div>
+        <div class="field"><label for="t2n">Clients</label><input type="number" id="t2n" value="6" min="0"></div>
+        <div class="field"><label for="t2p">Price / month</label><input type="number" id="t2p" value="9000" min="0" step="250"></div>
+        <div class="field"><label for="t2h">Hours / client / mo</label><input type="number" id="t2h" value="18" min="0" step="0.5"></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-group-title">Tier 3 — Embedded</div>
+        <div class="field"><label for="t3n">Clients</label><input type="number" id="t3n" value="2" min="0"></div>
+        <div class="field"><label for="t3p">Price / month</label><input type="number" id="t3p" value="25000" min="0" step="500"></div>
+        <div class="field"><label for="t3h">Hours / client / mo</label><input type="number" id="t3h" value="40" min="0" step="1"></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-group-title">Cost base</div>
+        <div class="field"><label for="rate">Loaded rate / hr</label><input type="number" id="rate" value="240" min="0" step="5"></div>
+        <div class="field"><label for="fixed">Content + ops / mo</label><input type="number" id="fixed" value="30000" min="0" step="500"></div>
+        <div class="field"><label for="fte">Billable hrs / FTE / mo</label><input type="number" id="fte" value="140" min="1" step="5"></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-group-title">Pipeline effect</div>
+        <div class="field"><label for="conv">Convert to project / yr</label><input type="number" id="conv" value="25" min="0" max="100" step="1"></div>
+        <div class="field"><label for="proj">Avg project value</label><input type="number" id="proj" value="150000" min="0" step="10000"></div>
+      </div>
+
+      <button class="reset-btn" onclick="resetModel()">Reset to defaults</button>
+    </div>
+
+    <div class="results">
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label">Subscription ARR</div>
+          <div class="kpi-val" id="k-arr">—</div>
+          <div class="kpi-note" id="k-arr-note">across all paying tiers</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Gross margin</div>
+          <div class="kpi-val" id="k-gm">—</div>
+          <div class="kpi-note" id="k-gm-note">after delivery and content cost</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">FTE required</div>
+          <div class="kpi-val" id="k-fte">—</div>
+          <div class="kpi-note" id="k-fte-note">to cover consumed hours</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Attributed pipeline</div>
+          <div class="kpi-val" id="k-pipe">—</div>
+          <div class="kpi-note" id="k-pipe-note">project revenue sourced from subscribers</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="breakdown">
+          <h4>Annual P&amp;L</h4>
+          <div class="bd-line"><span>Tier 1 revenue</span><span id="b-t1">—</span></div>
+          <div class="bd-line"><span>Tier 2 revenue</span><span id="b-t2">—</span></div>
+          <div class="bd-line"><span>Tier 3 revenue</span><span id="b-t3">—</span></div>
+          <div class="bd-line total"><span>Total revenue</span><span id="b-rev">—</span></div>
+          <div class="bd-line neg"><span>Delivery cost (hours)</span><span id="b-del">—</span></div>
+          <div class="bd-line neg"><span>Content + ops</span><span id="b-fix">—</span></div>
+          <div class="bd-line total"><span>Gross profit</span><span id="b-gp">—</span></div>
+          <p class="bd-sub" id="b-note">—</p>
+        </div>
+
+        <div class="breakdown">
+          <h4>Capacity &amp; breakeven</h4>
+          <div class="bd-line"><span>Hours consumed / month</span><span id="c-hrs">—</span></div>
+          <div class="bd-line"><span>Equivalent FTE</span><span id="c-fte">—</span></div>
+          <div class="bd-line"><span>Revenue per FTE</span><span id="c-rpf">—</span></div>
+          <div class="bd-line"><span>Contribution / Tier 2 client</span><span id="c-cpc">—</span></div>
+          <div class="bd-line total"><span>Tier 2 clients to break even</span><span id="c-be">—</span></div>
+          <div class="capacity-bar"><div class="capacity-fill" id="c-bar" style="width:0%"></div></div>
+          <p class="bd-sub" id="c-note">—</p>
+        </div>
+      </div>
+
+      <div class="breakdown">
+        <h4>Sensitivity — what happens if hours run over</h4>
+        <div class="bd-line"><span>If Tier 2 consumes 50% more hours than assumed</span><span id="s-50">—</span></div>
+        <div class="bd-line"><span>If Tier 2 consumes double the assumed hours</span><span id="s-100">—</span></div>
+        <div class="bd-line"><span>If half of Tier 1 churns at first renewal</span><span id="s-churn">—</span></div>
+        <p class="bd-sub">Gross margin under each scenario. If the model breaks on the first row, the tier
+           caps are wrong and no amount of pricing fixes it.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="model-caveat">
+    <strong>Do not show this model at the board with default values in it.</strong> Defaults here are
+    invented for structure, not derived from anything. A model populated with guesses is worse than no
+    model &mdash; it invites a challenge on the inputs that cannot be answered. Replace the hours and
+    price assumptions with pilot measurements first.
+  </div>
+</section>
+
+<!-- ============ EVIDENCE ============ -->
+<section class="block" id="evidence">
+  <div class="block-label">05 &mdash; Evidence plan</div>
+  <h2>What has to be true by March</h2>
+  <p class="block-intro">
+    One completed engagement is the central weakness of this pitch. The board will ask how many
+    post-engagement clients have been watched going cold, and the honest answer today is "one, partially."
+    Everything below exists to change that answer. Items marked <span class="badge blocker">blocker</span>
+    would sink the offering if they come back wrong &mdash; do those first, while failing is still cheap.
+  </p>
+  <p class="progress-note">Checkbox state saves locally in this browser only.</p>
+
+  <div id="checklist"></div>
+</section>
+
+<!-- ============ OBJECTIONS ============ -->
+<section class="block" id="objections">
+  <div class="block-label">06 &mdash; Objections</div>
+  <h2>What the room will ask</h2>
+  <p class="block-intro">
+    Rehearse these cold. The third column is the point: an answer without evidence behind it is an
+    opinion, and the board hears a lot of those.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:24%">Objection</th>
+          <th style="width:40%">Answer</th>
+          <th style="width:36%">Evidence needed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>"How is this different from Gartner or ClearEdge?"</strong></td>
+          <td>They sell market information. We sell retained knowledge of the client's own estate held by the team that negotiated it. Continuity, not intelligence.</td>
+          <td>Verified competitor positioning; at least one client saying in their own words that continuity is what they would pay for</td>
+        </tr>
+        <tr>
+          <td><strong>"Does this cannibalise project revenue?"</strong></td>
+          <td>Scope boundary is explicit: the subscription prepares and coaches, the engagement executes and owns the outcome. The subscription never sits at the table.</td>
+          <td>Pilot data showing subscribers still bought project work &mdash; ideally that they bought <em>more</em> of it</td>
+        </tr>
+        <tr>
+          <td><strong>"Who staffs it when everyone is billable?"</strong></td>
+          <td>Pooled desk on a rota with hard-capped hours per tier, plus a named relationship owner. Not a dedicated team until volume justifies one.</td>
+          <td>Measured hours-per-client and, critically, the <em>variance</em> &mdash; the variance is what determines whether it is staffable</td>
+        </tr>
+        <tr>
+          <td><strong>"Can we legally use client deal data this way?"</strong> <span class="badge blocker">blocker</span></td>
+          <td>Not under current MSAs as written. Requires aggregation and anonymisation rights added going forward, plus a documented internal rule on what crosses between clients.</td>
+          <td>Legal review complete; draft MSA clause in hand; confirmation that retrospective data is excluded</td>
+        </tr>
+        <tr>
+          <td><strong>"What is Bain's position on a persistent benchmark asset?"</strong> <span class="badge blocker">blocker</span></td>
+          <td>Unknown, and materially different from the per-engagement conflict wall that already exists. Being the person who raised it is good; having it raised at you is not.</td>
+          <td>Written position from whoever owns conflicts, obtained before November</td>
+        </tr>
+        <tr>
+          <td><strong>"Why you? You have done one engagement."</strong></td>
+          <td>The tooling is already built and in use by other consultants on live engagements. This is the commercial extension of something the firm already runs, not a first-timer's proposal.</td>
+          <td>Internal adoption numbers &mdash; consultants using the planners, engagements they were used on, quotes from users</td>
+        </tr>
+        <tr>
+          <td><strong>"They will cancel once their big renewal is done."</strong></td>
+          <td>Annual commitment, priced against a full-portfolio renewal calendar. Across a whole IT estate there is always something renewing &mdash; which is precisely what the spend diagnostic demonstrates.</td>
+          <td>Renewal density analysis from the diagnostic: how many contract events per client per year</td>
+        </tr>
+        <tr>
+          <td><strong>"How do we prove value at renewal?"</strong></td>
+          <td>Attribution logged per benchmark issued: what we said, what they landed, what the delta was. Built in from day one rather than reconstructed at month eleven.</td>
+          <td>Attribution mechanism designed and running in the pilot, with at least one logged delta</td>
+        </tr>
+        <tr>
+          <td><strong>"Is the margin good enough to be worth the distraction?"</strong></td>
+          <td>Judge it as a pipeline instrument, not a standalone P&amp;L line. It clears a far lower bar on that basis, and the renewal calendar has value independent of subscription revenue.</td>
+          <td>The model in section 04, populated with real hours data rather than assumptions</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ OPEN ============ -->
+<section class="block" id="open">
+  <div class="block-label">07 &mdash; Open questions</div>
+  <h2>Unresolved, and who resolves them</h2>
+
+  <div class="prose-grid">
+    <div class="pcard risk">
+      <span class="tag">Blocker</span>
+      <h4>Bain conflicts on a standing data asset</h4>
+      <p>The hands-off stance on negotiations covers engagements. A persistent database of what enterprises
+         pay for specific software, sitting inside a Bain-owned entity, while Bain works extensively with
+         software vendors and their PE owners, is a different question entirely.</p>
+      <p>Owner: conflicts / legal. Needed by: November, before any pilot captures data.</p>
+    </div>
+    <div class="pcard risk">
+      <span class="tag">Blocker</span>
+      <h4>MSA rights over engagement data</h4>
+      <p>Almost certainly not permitted as current agreements are written. Needs a drafted clause for future
+         MSAs and an explicit decision that historic data stays out of the asset.</p>
+      <p>Owner: legal. Needed by: November.</p>
+    </div>
+    <div class="pcard warn">
+      <span class="tag">Decide</span>
+      <h4>Where it sits commercially</h4>
+      <p>Own P&amp;L line, or attributed to the practice that sourced the client? This determines whose
+         numbers it helps and therefore who will sponsor it. Get the answer before picking a sponsor, not
+         after.</p>
+    </div>
+    <div class="pcard warn">
+      <span class="tag">Decide</span>
+      <h4>Who the buyer is</h4>
+      <p>Procurement lead, CIO, or CFO. Procurement advisory budgets are thin and this often ends up funded
+         out of a project budget instead. Different buyers want materially different pitches.</p>
+    </div>
+    <div class="pcard">
+      <span class="tag">Find</span>
+      <h4>A partner-level sponsor</h4>
+      <p>VP boards are won before the room. The pilot work is also the vehicle for earning an advocate
+         &mdash; every consultant interview in the evidence plan is a candidate conversation.</p>
+    </div>
+    <div class="pcard">
+      <span class="tag">Decide</span>
+      <h4>Name</h4>
+      <p>Sourcing Desk, Renewal Intelligence, or Continuity. Not "Sourcing as a Service" &mdash; that name
+         already belongs to outsourced procurement execution and will misdirect every conversation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TIMELINE ============ -->
+<section class="block" id="timeline">
+  <div class="block-label">08 &mdash; Timeline</div>
+  <h2>Six months</h2>
+  <p class="block-intro">
+    The sequencing matters more than the content. Evidence first, argument last &mdash; a case assembled
+    from results in February is a different document from one written in September and defended for six
+    months.
+  </p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-when">Sep &ndash; Oct</div>
+      <h4>Clear the blockers, gather the base</h4>
+      <p>Conflicts and MSA questions raised in writing. Consultant interviews run. Tooling adoption pushed
+         inside the firm and counted.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-when">Nov &ndash; Dec</div>
+      <h4>Pilots running</h4>
+      <p>Existing client instrumented free of charge. Two or three more from colleagues' past clients if the
+         interviews surface willing ones. Every hour and question logged.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-when">Jan</div>
+      <h4>Real numbers</h4>
+      <p>Pilot data replaces the assumptions in the model. Hours variance is the number that matters most.
+         Attribution mechanism has produced at least one logged delta.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-when">Feb</div>
+      <h4>Sponsor and socialise</h4>
+      <p>Partner-level advocate secured. Case walked through with leadership individually, so nobody hears
+         it for the first time in the room.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-when">Mar</div>
+      <h4>Board</h4>
+      <p>Present evidence of something already running, with an ask attached. Not a concept.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <p>Working draft &mdash; Brian Chernauskas. Not published, not circulated.</p>
+  <div class="footer-wordmark">Sourcing Desk.</div>
+</footer>
+
+<script>
+/* ---------- theme ---------- */
+function toggleTheme() {
+  const root = document.documentElement;
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  try { localStorage.setItem('sd-theme', next); } catch (e) {}
+}
+try {
+  const saved = localStorage.getItem('sd-theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+} catch (e) {}
+
+/* ---------- countdown ---------- */
+const BOARD_DATE = new Date(2027, 2, 1); // March 2027
+(function () {
+  const now = new Date();
+  const months = (BOARD_DATE.getFullYear() - now.getFullYear()) * 12 + (BOARD_DATE.getMonth() - now.getMonth());
+  const days = Math.ceil((BOARD_DATE - now) / 86400000);
+  document.getElementById('countdown').textContent = days + ' days to board';
+  document.getElementById('stat-months').textContent = months;
+})();
+
+/* ---------- economics model ---------- */
+const DEFAULTS = {
+  t1n: 12, t1p: 3500, t1h: 4,
+  t2n: 6,  t2p: 9000, t2h: 18,
+  t3n: 2,  t3p: 25000, t3h: 40,
+  rate: 240, fixed: 30000, fte: 140,
+  conv: 25, proj: 150000
+};
+const FIELDS = Object.keys(DEFAULTS);
+let CUR = '$';
+
+function num(id) {
+  const v = parseFloat(document.getElementById(id).value);
+  return isFinite(v) ? v : 0;
+}
+function money(n) {
+  const abs = Math.abs(n);
+  let s;
+  if (abs >= 1000000) s = (n / 1000000).toFixed(2).replace(/\.00$/, '') + 'M';
+  else if (abs >= 1000) s = Math.round(n / 1000) + 'k';
+  else s = Math.round(n).toString();
+  return (n < 0 ? '-' : '') + CUR + s.replace('-', '');
+}
+function pct(n) { return (n * 100).toFixed(0) + '%'; }
+
+function gmFor(t2hours) {
+  const rate = num('rate'), fixedA = num('fixed') * 12;
+  const rev = (num('t1n') * num('t1p') + num('t2n') * num('t2p') + num('t3n') * num('t3p')) * 12;
+  const hrs = (num('t1n') * num('t1h') + num('t2n') * t2hours + num('t3n') * num('t3h')) * 12;
+  const cost = hrs * rate + fixedA;
+  return rev > 0 ? (rev - cost) / rev : 0;
+}
+
+function recalc() {
+  CUR = document.getElementById('cur').value;
+
+  const t1r = num('t1n') * num('t1p') * 12;
+  const t2r = num('t2n') * num('t2p') * 12;
+  const t3r = num('t3n') * num('t3p') * 12;
+  const rev = t1r + t2r + t3r;
+
+  const hrsMo = num('t1n') * num('t1h') + num('t2n') * num('t2h') + num('t3n') * num('t3h');
+  const delivery = hrsMo * 12 * num('rate');
+  const fixedA = num('fixed') * 12;
+  const gp = rev - delivery - fixedA;
+  const gm = rev > 0 ? gp / rev : 0;
+
+  const fteReq = hrsMo / Math.max(num('fte'), 1);
+  const clients = num('t1n') + num('t2n') + num('t3n');
+  const pipeline = clients * (num('conv') / 100) * num('proj');
+
+  // headline
+  document.getElementById('k-arr').textContent = money(rev);
+  document.getElementById('k-arr-note').textContent = clients + ' paying clients across three tiers';
+
+  const gmEl = document.getElementById('k-gm');
+  gmEl.textContent = pct(gm);
+  gmEl.className = 'kpi-val ' + (gm >= 0.5 ? 'good' : gm >= 0.3 ? 'mid' : 'bad');
+  document.getElementById('k-gm-note').textContent =
+    gm >= 0.5 ? 'healthy for a productised service' :
+    gm >= 0.3 ? 'thin — consulting-like, not software-like' :
+                'below the bar; the board will say so';
+
+  document.getElementById('k-fte').textContent = fteReq.toFixed(1);
+  document.getElementById('k-fte-note').textContent =
+    fteReq < 1 ? 'fits inside a pooled rota' : 'needs dedicated capacity — the hard part';
+
+  document.getElementById('k-pipe').textContent = money(pipeline);
+  document.getElementById('k-pipe-note').textContent =
+    'at ' + num('conv') + '% annual conversion to project work';
+
+  // P&L
+  document.getElementById('b-t1').textContent = money(t1r);
+  document.getElementById('b-t2').textContent = money(t2r);
+  document.getElementById('b-t3').textContent = money(t3r);
+  document.getElementById('b-rev').textContent = money(rev);
+  document.getElementById('b-del').textContent = money(-delivery);
+  document.getElementById('b-fix').textContent = money(-fixedA);
+  document.getElementById('b-gp').textContent = money(gp);
+  document.getElementById('b-note').textContent =
+    'Pipeline contribution of ' + money(pipeline) + ' sits outside this P&L. Counting it here would be ' +
+    'double-counting against the practice that delivers the project.';
+
+  // capacity
+  document.getElementById('c-hrs').textContent = Math.round(hrsMo) + ' hrs';
+  document.getElementById('c-fte').textContent = fteReq.toFixed(2);
+  document.getElementById('c-rpf').textContent = fteReq > 0 ? money(rev / fteReq) : '—';
+
+  const contribT2 = num('t2p') * 12 - num('t2h') * 12 * num('rate');
+  document.getElementById('c-cpc').textContent = money(contribT2);
+  const be = contribT2 > 0 ? Math.ceil(fixedA / contribT2) : 0;
+  document.getElementById('c-be').textContent = contribT2 > 0 ? be + ' clients' : 'never — tier loses money';
+
+  const SCALE = 3; // bar is scaled against 3 FTE
+  document.getElementById('c-bar').style.width = Math.min(fteReq / SCALE * 100, 100) + '%';
+  document.getElementById('c-note').textContent =
+    'Bar is scaled against ' + SCALE + ' FTE. Breakeven covers the fixed content and ops base from ' +
+    'Tier 2 contribution alone — if that number is above the Tier 2 client count above, the fixed base ' +
+    'is being subsidised by the other tiers.';
+
+  // sensitivity
+  const s50 = gmFor(num('t2h') * 1.5);
+  const s100 = gmFor(num('t2h') * 2);
+  document.getElementById('s-50').textContent = pct(s50) + ' margin';
+  document.getElementById('s-100').textContent = pct(s100) + ' margin';
+
+  const churnRev = (num('t1n') * 0.5 * num('t1p') + num('t2n') * num('t2p') + num('t3n') * num('t3p')) * 12;
+  const churnHrs = (num('t1n') * 0.5 * num('t1h') + num('t2n') * num('t2h') + num('t3n') * num('t3h')) * 12;
+  const churnGm = churnRev > 0 ? (churnRev - churnHrs * num('rate') - fixedA) / churnRev : 0;
+  document.getElementById('s-churn').textContent = pct(churnGm) + ' margin';
+
+  try { localStorage.setItem('sd-model', JSON.stringify(readAll())); } catch (e) {}
+}
+
+function readAll() {
+  const o = {};
+  FIELDS.forEach(f => o[f] = num(f));
+  o.cur = document.getElementById('cur').value;
+  return o;
+}
+function resetModel() {
+  FIELDS.forEach(f => document.getElementById(f).value = DEFAULTS[f]);
+  document.getElementById('cur').value = '$';
+  recalc();
+}
+try {
+  const saved = JSON.parse(localStorage.getItem('sd-model') || 'null');
+  if (saved) {
+    FIELDS.forEach(f => { if (typeof saved[f] === 'number') document.getElementById(f).value = saved[f]; });
+    if (saved.cur) document.getElementById('cur').value = saved.cur;
+  }
+} catch (e) {}
+FIELDS.forEach(f => document.getElementById(f).addEventListener('input', recalc));
+document.getElementById('cur').addEventListener('change', recalc);
+recalc();
+
+/* ---------- evidence checklist ---------- */
+const EVIDENCE = [
+  {
+    group: 'Clear the blockers', when: 'September — October',
+    items: [
+      { id: 'conflicts', t: 'Get a written position from conflicts/legal on holding a standing benchmark asset inside a Bain-owned entity', w: 'Different question from the per-engagement wall. If this comes back no, the data flywheel argument is dead and the offering needs rebuilding without it.', blocker: true },
+      { id: 'msa', t: 'Legal review of MSA rights over engagement-derived pricing data, plus a draft clause for future agreements', w: 'Assume current agreements do not permit it. Confirm historic data is excluded.', blocker: true },
+      { id: 'pl', t: 'Settle where the offering sits commercially — own P&L line or attributed to the sourcing practice', w: 'Determines whose numbers it helps, and therefore who is willing to sponsor it.' }
+    ]
+  },
+  {
+    group: 'Build the evidence base', when: 'September — October',
+    items: [
+      { id: 'interviews', t: 'Interview 10–15 consultants on what happens to their clients after delivery', w: 'Primary research substituting for a thin personal book. How many clients come back, how long the gap is, what the client got wrong in between.' },
+      { id: 'quotes', t: 'Capture three usable quotes from those interviews', w: 'A colleague describing a client repeating a mistake is the most persuasive single artefact available before pilot data lands.' },
+      { id: 'adoption', t: 'Push planner tooling adoption inside the firm and count it', w: 'Consultants using it, engagements it was used on. Fully within your control and answers the "why you" objection more directly than the offering does.' },
+      { id: 'density', t: 'Run renewal density analysis — contract events per client per year — off the spend diagnostic', w: 'Underwrites the annual-commitment pricing and kills the "they cancel after their big renewal" objection.' }
+    ]
+  },
+  {
+    group: 'Run pilots', when: 'November — December',
+    items: [
+      { id: 'pilot1', t: 'Instrument the existing client as pilot one, free of charge for six months', w: 'Zero risk to the firm, and n=1 with real data beats a concept deck. Log every question, every hour, every renewal touched.' },
+      { id: 'pilot2', t: 'Recruit two or three more pilots from colleagues past clients', w: 'Only reachable through the interviews above — another reason to run those first.' },
+      { id: 'attrib', t: 'Design and run the value attribution mechanism during the pilot', w: 'Benchmark issued, price landed, delta logged. Retrofitting this at month eleven does not work.' },
+      { id: 'hours', t: 'Log hours consumed per pilot client, weekly', w: 'The single most important number in the model, and the variance matters more than the mean.' }
+    ]
+  },
+  {
+    group: 'Assemble the case', when: 'January — February',
+    items: [
+      { id: 'model', t: 'Replace every model assumption with measured pilot data', w: 'Do not present the model with invented defaults in it.' },
+      { id: 'competitors', t: 'Verify competitor positioning against current published material', w: 'The market table is hypothesis until this is done.' },
+      { id: 'sponsor', t: 'Secure a partner-level sponsor', w: 'Boards are won beforehand. Every interview above is a candidate conversation.' },
+      { id: 'socialise', t: 'Walk the case through with each board member individually', w: 'Nobody should hear this for the first time in the room.' },
+      { id: 'ask', t: 'Define the specific ask — headcount, budget, mandate, or permission to continue', w: 'A case without an ask reads as a think-piece.' }
+    ]
+  }
+];
+
+function renderChecklist() {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('sd-evidence') || '{}'); } catch (e) {}
+
+  const root = document.getElementById('checklist');
+  let total = 0, done = 0;
+
+  EVIDENCE.forEach(g => {
+    const gd = document.createElement('div');
+    gd.className = 'check-group';
+    const head = document.createElement('div');
+    head.className = 'check-group-head';
+    head.innerHTML = '<h4>' + g.group + '</h4><span class="when">' + g.when + '</span>';
+    gd.appendChild(head);
+
+    g.items.forEach(it => {
+      total++;
+      const isDone = !!saved[it.id];
+      if (isDone) done++;
+
+      const row = document.createElement('div');
+      row.className = 'check-item' + (isDone ? ' done' : '');
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = isDone;
+      cb.addEventListener('change', () => {
+        saved[it.id] = cb.checked;
+        try { localStorage.setItem('sd-evidence', JSON.stringify(saved)); } catch (e) {}
+        row.classList.toggle('done', cb.checked);
+        updateProgress();
+      });
+
+      const body = document.createElement('div');
+      body.className = 'check-body';
+      const t = document.createElement('div');
+      t.className = 'ct';
+      t.textContent = it.t;
+      if (it.blocker) {
+        const b = document.createElement('span');
+        b.className = 'badge blocker';
+        b.textContent = 'blocker';
+        t.appendChild(b);
+      }
+      const w = document.createElement('div');
+      w.className = 'cw';
+      w.textContent = it.w;
+      body.appendChild(t);
+      body.appendChild(w);
+
+      row.appendChild(cb);
+      row.appendChild(body);
+      gd.appendChild(row);
+    });
+
+    root.appendChild(gd);
+  });
+
+  window.__evTotal = total;
+  updateProgress();
+}
+
+function updateProgress() {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('sd-evidence') || '{}'); } catch (e) {}
+  const done = Object.values(saved).filter(Boolean).length;
+  document.getElementById('stat-evidence').textContent = done + '/' + window.__evTotal;
+}
+
+renderChecklist();
+</script>
+</body>
+</html>
